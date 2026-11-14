@@ -1,0 +1,19 @@
+{
+  "appId": "com.chaiproductions.shemotkodesh",
+  "appName": "שמות הקודש",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#09090f"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 400,
+      "backgroundColor": "#09090f",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "LocalNotifications": {
+      "iconColor": "#DAA520"
+    }
+  }
+}

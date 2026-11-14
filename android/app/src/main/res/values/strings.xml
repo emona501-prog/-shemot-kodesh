@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">שמות הקודש</string>
+    <string name="title_activity_main">שמות הקודש</string>
+    <string name="package_name">com.chaiproductions.shemotkodesh</string>
+    <string name="custom_url_scheme">com.chaiproductions.shemotkodesh</string>
+</resources>
