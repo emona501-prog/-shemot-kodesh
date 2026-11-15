@@ -23,7 +23,7 @@ android {
             if (ks) {
                 storeFile file(ks)
                 storePassword(System.getenv("KEYSTORE_PASS") ?: System.getenv("KS_PASS"))
-                keyAlias "breslov"
+                keyAlias "shemot"
                 keyPassword(System.getenv("KEYSTORE_PASS") ?: System.getenv("KS_PASS"))
             }
         }
