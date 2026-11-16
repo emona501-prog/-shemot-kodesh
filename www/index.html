@@ -2729,7 +2729,7 @@ function drumAnimateName(idx){
   // ════════════════════════════════════════════
   if(drumDir === 'v'){
     const startY = -H * 0.44;   // מתחיל מעל המרכז
-    const endY   =  H * 0.46;   // מגיע כמעט לתחתית (לא יוצא)
+    const endY   =  H * 0.04;   // מגיע עד קו האמצע בלבד ונעלם שם
 
     function stepV(now){
       const p    = Math.min((now - t0) / dur, 1);
@@ -2738,11 +2738,11 @@ function drumAnimateName(idx){
       // מיקום — ירידה ישרה
       const y = startY + (endY - startY) * arcT;
 
-      // opacity — כניסה מהירה, אחיזה, יציאה מדורגת לפני התחתית
+      // opacity — כניסה מהירה, אחיזה, יציאה מדורגת לפני קו האמצע
       let opa;
       if     (arcT < 0.18) opa = arcT / 0.18;          // fade-in מהיר
-      else if(arcT < 0.62) opa = 1;                      // גלוי מלא
-      else                 opa = 1 - (arcT - 0.62) / 0.38; // fade-out רך לפני התחתית
+      else if(arcT < 0.52) opa = 1;                      // גלוי מלא
+      else                 opa = 1 - (arcT - 0.52) / 0.48; // fade-out — נמס עד קו האמצע
 
       // גודל — גדל קצת ואז נשאר יציב (לא מתכווץ חזרה)
       const scl = 0.55 + 0.45 * Math.min(arcT / 0.3, 1);
@@ -2751,8 +2751,8 @@ function drumAnimateName(idx){
       const fs = 56 + 24 * Math.min(arcT / 0.3, 1) * (arcT < 0.75 ? 1 : (1-arcT)*4);
       el.style.fontSize = Math.max(40, fs).toFixed(0) + 'px';
 
-      // טשטוש — רק בהיעלמות
-      const blur = arcT > 0.65 ? ((arcT - 0.65) / 0.35) * 8 : 0;
+      // טשטוש — מתחיל עם הדהייה, מתגבר
+      const blur = arcT > 0.52 ? ((arcT - 0.52) / 0.48) * 12 : 0;
 
       // הטיה קלה בציר X (מגיע מלמעלה)
       const rx = (1 - Math.min(arcT / 0.3, 1)) * 18;
