@@ -390,6 +390,7 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
       <button class="nk-btn nk-active" id="nk-none" onclick="setNikudMode('none')">ללא ניקוד</button>
       <button class="nk-btn" id="nk-auto" onclick="setNikudMode('auto')">אוטומטי (מהספר)</button>
       <button class="nk-btn" id="nk-manual" onclick="setNikudMode('manual')">עצמי לפי שם</button>
+      <button class="nk-btn" id="nk-letter" onclick="setNikudMode('letter')">שמות אותיות</button>
     </div>
     <div id="custom-color-panel" style="display:none;margin-top:8px;background:#0e0c04;border:1px solid #2a1a00;border-radius:10px;padding:14px">
       <div style="font-size:11px;color:#DAA520;margin-bottom:8px;letter-spacing:1px">🎨 בחירת צבע לשמות</div>
@@ -2979,12 +2980,44 @@ const SEGULA_COLOR_DATA = {
 };
 
 // ===== NIKUD + COLOR + ANGEL =====
-let nikudMode = 'none'; // none | auto | manual
+let nikudMode = 'none'; // none | auto | manual | letter
 let manualNikud = JSON.parse(localStorage.getItem('manualNikud72') || '{}');
+
+// ניקוד לפי שם האות: כל אות מקבלת את הניקוד של ההברה הפותחת בשמה
+// א→אָלֶף→קמץ, ב→בֵּית→צירה, ג→גִּימֶל→חיריק ...
+const LETTER_VOWEL = {
+  'א': 'ָ', // קמץ  — אָלֶף
+  'ב': 'ֵ', // צירה — בֵּית
+  'ג': 'ִ', // חיריק — גִּימֶל
+  'ד': 'ָ', // קמץ  — דָּלֶת
+  'ה': 'ֵ', // צירה — הֵא
+  'ו': 'ָ', // קמץ  — וָו
+  'ז': 'ַ', // פתח  — זַיִן
+  'ח': 'ֵ', // צירה — חֵית
+  'ט': 'ֵ', // צירה — טֵית
+  'י': 'ֹ', // חולם — יוֹד
+  'כ': 'ַ', // פתח  — כַּף
+  'ל': 'ָ', // קמץ  — לָמֶד
+  'מ': 'ֵ', // צירה — מֵם
+  'נ': 'ֻ', // קובוץ — נוּן
+  'ס': 'ָ', // קמץ  — סָמֶךְ
+  'ע': 'ַ', // פתח  — עַיִן
+  'פ': 'ֵ', // צירה — פֵּא
+  'צ': 'ָ', // קמץ  — צָדִי
+  'ק': 'ֹ', // חולם — קוֹף
+  'ר': 'ֵ', // צירה — רֵישׁ
+  'ש': 'ִ', // חיריק — שִׁין
+  'ת': 'ָ', // קמץ  — תָּו
+};
+function applyLetterNameNikud(baseName){
+  // מסנן רק אותיות עבריות (U+05D0–U+05EA) ומוסיף ניקוד
+  const stripped = [...baseName].filter(ch=>{const c=ch.codePointAt(0);return c>=0x05D0&&c<=0x05EA;}).join('');
+  return [...stripped].map(ch=>{const v=LETTER_VOWEL[ch];return v?ch+v:ch;}).join('');
+}
 
 function setNikudMode(mode){
   nikudMode = mode;
-  ['none','auto','manual'].forEach(m => {
+  ['none','auto','manual','letter'].forEach(m => {
     const b = document.getElementById('nk-'+m);
     if(b) b.classList.toggle('nk-active', m===mode);
   });
@@ -2999,6 +3032,7 @@ function getDisplayName(n){
   if(pn && pn.nikud) return pn.nikud;
   if(nikudMode === 'auto' && ext) return ext.nikud;
   if(nikudMode === 'manual' && manualNikud[n.id]) return manualNikud[n.id];
+  if(nikudMode === 'letter') return applyLetterNameNikud(n.name);
   return n.name;
 }
 
@@ -3189,7 +3223,7 @@ function renderCalendar() {
   const name = NAMES_A[nameId - 1];
   const ext = EXTRA_DATA[nameId];
   const biur = BIUR_DATA[nameId] || '';
-  const nikud = (nikudMode === 'auto' && ext) ? ext.nikud : name.name;
+  const nikud = nikudMode==='letter' ? applyLetterNameNikud(name.name) : (nikudMode === 'auto' && ext) ? ext.nikud : name.name;
   const nameColor = (colorMode === 'segula' && SEGULA_COLOR_DATA[nameId])
     ? (SEGULA_COLOR_DATA[nameId].color === '#F5F5F0' ? '#E8D5A3' : SEGULA_COLOR_DATA[nameId].color)
     : (ext ? ext.color : '#DAA520');
@@ -3285,7 +3319,7 @@ function renderCalendar() {
         const nd = getNameForDay(hd);
         const nm = NAMES_A[nd.nameId-1];
         const ex = EXTRA_DATA[nd.nameId];
-        const nk = (nikudMode==='auto'&&ex) ? ex.nikud : nm.name;
+        const nk = nikudMode==='letter' ? applyLetterNameNikud(nm.name) : (nikudMode==='auto'&&ex) ? ex.nikud : nm.name;
         const isToday = i === 0;
         return `<div class="cal-day-chip ${isToday?'today':''}">
           <div class="cal-day-chip-name">${nk}</div>
@@ -3566,7 +3600,7 @@ function renderNameTehilimHTML(nameId, compact) {
   const name = NAMES_A[nameId - 1];
   const sections = getNameTehilim(nameId);
   const ext = EXTRA_DATA[nameId];
-  const nikud = (nikudMode === 'auto' && ext) ? ext.nikud : name.name;
+  const nikud = nikudMode==='letter' ? applyLetterNameNikud(name.name) : (nikudMode === 'auto' && ext) ? ext.nikud : name.name;
   const nameColor = ext ? ext.color : '#DAA520';
 
   let html = '';
@@ -3634,7 +3668,7 @@ function renderTehilim() {
   for (let i = 1; i <= 72; i++) {
     const name = NAMES_A[i - 1];
     const ext = EXTRA_DATA[i];
-    const nikud = (nikudMode === 'auto' && ext) ? ext.nikud : name.name;
+    const nikud = nikudMode==='letter' ? applyLetterNameNikud(name.name) : (nikudMode === 'auto' && ext) ? ext.nikud : name.name;
     const nameColor = ext ? ext.color : '#DAA520';
     const letters = NAME_LETTERS[i - 1];
     const lettersStr = letters.join(' · ');
@@ -4141,7 +4175,7 @@ function buildColorEditorList(mode) {
   let html = '';
   NAMES_A.forEach(n => {
     const ext = EXTRA_DATA[n.id];
-    const nikud = (nikudMode === 'auto' && ext) ? ext.nikud : n.name;
+    const nikud = nikudMode==='letter' ? applyLetterNameNikud(n.name) : (nikudMode === 'auto' && ext) ? ext.nikud : n.name;
     const currentColor = getEffectiveColor(n.id, mode);
     const isEdited = colorEdits[mode] && colorEdits[mode][n.id];
     const defaultColor = mode === 'sefira'
