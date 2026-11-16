@@ -20,7 +20,10 @@
 body{background:linear-gradient(160deg,#07070f,#0d0d1a,#09090f);min-height:100vh;color:#e8d5a3;font-family:'Noto Serif Hebrew',David,serif;direction:rtl}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#4a3a1a;border-radius:3px}
 
-.header{text-align:center;padding:22px 16px 10px;border-bottom:1px solid #2a1a00}
+.header{text-align:center;padding:22px 16px 10px;border-bottom:1px solid #2a1a00;position:relative}
+.font-ctrl{position:absolute;left:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px}
+.font-ctrl button{width:28px;height:28px;border-radius:50%;background:#1a1200;border:1px solid #3a2800;color:#DAA520;font-size:16px;cursor:pointer;line-height:1;padding:0;display:flex;align-items:center;justify-content:center}
+.font-ctrl button:active{background:#2a1e00}
 .header-sub{font-size:10px;letter-spacing:4px;color:#5a4020;margin-bottom:5px}
 .header-title{font-size:clamp(20px,5vw,34px);font-weight:900;background:linear-gradient(135deg,#DAA520,#fff8dc,#B8860B);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .header-desc{font-size:12px;color:#7a6030;margin-top:4px}
@@ -323,7 +326,10 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
 <!-- ══ END SPLASH ══════════════════════════════════════ -->
 
 <div class="header">
-  
+  <div class="font-ctrl">
+    <button onclick="adjZoom(0.08)" title="הגדל טקסט">+</button>
+    <button onclick="adjZoom(-0.08)" title="הקטן טקסט">−</button>
+  </div>
   <div class="header-title" style="font-size:26px">שמות הקודש</div>
   <div class="header-sub" style="margin-top:4px">ע"ב שמות עם מערכת חכמה</div>
   <div class="header-desc">סגוליות, פסוקים, תפילות, תהלים קי״ט ושינון</div>
@@ -422,6 +428,8 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
         <div class="wr-tef" id="wr-tef"></div>
         <button class="wr-detail" id="wr-detail">פרטים מלאים →</button>
       </div>
+      <!-- היסטוריית הגרלות -->
+      <div id="wheel-history-wrap" style="margin-top:20px;max-width:380px;margin-inline:auto;text-align:right"></div>
     </div>
   </div>
 
@@ -1615,7 +1623,7 @@ function showView(v){
   });
   if(v==='favorites') renderFavorites();
   if(v==='verses')    renderVerses();
-  if(v==='wheel')     renderWheel();
+  if(v==='wheel'){renderWheel();renderWheelHistory();}
   if(v==='circle'){   renderCircle(); startCircle(); }
   if(v==='extra')     renderExtra();
   if(v==='calendar')  renderCalendar();
@@ -1956,7 +1964,34 @@ function spinWheel(){
     document.getElementById('wr-detail').onclick=()=>openModal(res.id,currentType);
     document.getElementById('wheelResult').classList.add('show');
     btn.disabled=false;btn.textContent='✦ סובב שוב ✦';
+    saveWheelHistory(res);
   },4200);
+}
+function saveWheelHistory(res){
+  const h=JSON.parse(localStorage.getItem('wheelHistory')||'[]');
+  const now=new Date();
+  const timeStr=now.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})+' '+now.toLocaleDateString('he-IL',{day:'numeric',month:'numeric'});
+  h.unshift({name:res.name,segula:res.segula,time:timeStr});
+  if(h.length>10) h.length=10;
+  localStorage.setItem('wheelHistory',JSON.stringify(h));
+  renderWheelHistory();
+}
+function renderWheelHistory(){
+  const wrap=document.getElementById('wheel-history-wrap');
+  if(!wrap) return;
+  const h=JSON.parse(localStorage.getItem('wheelHistory')||'[]');
+  if(!h.length){wrap.innerHTML='';return;}
+  wrap.innerHTML=`<div style="font-size:11px;color:#5a4020;letter-spacing:2px;margin-bottom:8px;text-align:center">⟳ הגרלות אחרונות</div>`
+    +h.map((e,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:${i===0?'#1a1200':'#0e0a00'};border:1px solid #2a1800;border-radius:8px;margin-bottom:5px">
+      <span style="font-size:16px;color:#DAA520;font-weight:700;min-width:36px;text-align:center">${e.name}</span>
+      <span style="flex:1;font-size:11px;color:#8a7040">${e.segula}</span>
+      <span style="font-size:10px;color:#4a3010">${e.time}</span>
+    </div>`).join('')
+    +`<button onclick="clearWheelHistory()" style="margin-top:6px;background:none;border:1px solid #2a1800;color:#4a3010;font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;width:100%">× נקה היסטוריה</button>`;
+}
+function clearWheelHistory(){
+  localStorage.removeItem('wheelHistory');
+  renderWheelHistory();
 }
 
 function filterNames(q){
@@ -3166,8 +3201,15 @@ function renderCalendar() {
     </div>
   </div>`;
 
+  const notifBtn=`<div style="margin-top:12px">
+    <button onclick="toggleDailyReminder()" id="notif-btn"
+      style="width:100%;padding:12px;background:#0e0b04;border:1px solid #2a1a00;border-radius:10px;
+             color:#8a7040;font-size:13px;cursor:pointer;font-family:inherit">
+      🔔 ${localStorage.getItem('dailyReminder')==='1'?'תזכורת יומית פעילה — לחץ לביטול':'הפעל תזכורת יומית — שם השם בכל בוקר'}
+    </button>
+  </div>`;
   const calEl=document.getElementById('view-calendar');
-  if(calEl) calEl.innerHTML=html;
+  if(calEl) calEl.innerHTML=html+notifBtn;
 }
 
 // =========================================================
@@ -4695,6 +4737,18 @@ function shvCheckItem(el) {
   if(icon) icon.textContent=el.classList.contains('done')?'☑':'☐';
 }
 
+/* ---- FONT ZOOM ---- */
+(function(){
+  let z=parseFloat(localStorage.getItem('appZoom')||'1');
+  function applyZoom(v){
+    z=Math.min(1.5,Math.max(0.75,v));
+    document.body.style.zoom=z;
+    localStorage.setItem('appZoom',z);
+  }
+  applyZoom(z);
+  window.adjZoom=function(d){applyZoom(z+d);};
+})();
+
 /* ---- SCROLL TO TOP ---- */
 function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
 (function(){
@@ -4704,6 +4758,43 @@ function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
     btn.classList.toggle('vis', window.scrollY > 300);
   },{passive:true});
 })();
+
+/* ---- DAILY REMINDER ---- */
+async function toggleDailyReminder(){
+  const active=localStorage.getItem('dailyReminder')==='1';
+  if(active){
+    // ביטול
+    if(window.Capacitor?.Plugins?.LocalNotifications){
+      await window.Capacitor.Plugins.LocalNotifications.cancel({notifications:[{id:72}]}).catch(()=>{});
+    }
+    localStorage.removeItem('dailyReminder');
+    renderCalendar();
+    return;
+  }
+  // הפעלה
+  if(!window.Capacitor?.Plugins?.LocalNotifications){
+    alert('⚠️ תזכורות פועלות רק באפליקציה המותקנת (לא בדפדפן).\nהורד את האפליקציה מקישור ההורדה.');
+    return;
+  }
+  const perm=await window.Capacitor.Plugins.LocalNotifications.requestPermissions().catch(()=>({display:'denied'}));
+  if(perm.display!=='granted'){
+    alert('נדרשת הרשאה לשליחת הודעות. אפשר בהגדרות הטלפון.');
+    return;
+  }
+  // בדוק שם של מחר כדי לחשב — לכל יום ניצור notification חוזר
+  const now=new Date();
+  const scheduledAt=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,8,0,0);
+  await window.Capacitor.Plugins.LocalNotifications.schedule({notifications:[{
+    id:72,
+    title:'✦ שמות הקודש',
+    body:'בוקר טוב! פתח לשם היום שלך',
+    schedule:{at:scheduledAt,repeats:true,every:'day'},
+    smallIcon:'ic_notification',
+    iconColor:'#DAA520'
+  }]}).catch(e=>{alert('שגיאה: '+e.message);return;});
+  localStorage.setItem('dailyReminder','1');
+  renderCalendar();
+}
 
 /* ---- ABOUT / SHARE ---- */
 const APK_URL='https://github.com/emona501-prog/-shemot-kodesh/releases/download/v1.0.0/shemot-kodesh.apk';
