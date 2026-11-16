@@ -50,7 +50,7 @@ body{background:linear-gradient(160deg,#07070f,#0d0d1a,#09090f);min-height:100vh
 .expand-arrow.open{transform:rotate(180deg)}
 
 /* SEARCH */
-.search-box{width:100%;padding:10px 14px;background:#0d0a05;border:1px solid #4a3a1a;color:#e8d5a3;border-radius:7px;font-family:inherit;font-size:14px;margin-bottom:14px}
+.search-box{width:100%;padding:10px 36px 10px 14px;background:#0d0a05;border:1px solid #4a3a1a;color:#e8d5a3;border-radius:7px;font-family:inherit;font-size:14px;margin-bottom:0;box-sizing:border-box}
 .search-box:focus{outline:none;border-color:#DAA520}
 .count-label{font-size:12px;color:#5a4020;margin-bottom:12px}
 
@@ -66,7 +66,15 @@ body{background:linear-gradient(160deg,#07070f,#0d0d1a,#09090f);min-height:100vh
 /* MODAL */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;padding:12px}
 .overlay.open{display:flex}
+@keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .modal{background:linear-gradient(160deg,#0e0e1a,#141420);border:1px solid #3a2a0a;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;padding:22px;position:relative;box-shadow:0 0 50px rgba(218,165,32,.15)}
+.overlay.open .modal{animation:modalIn .22s cubic-bezier(.34,1.4,.64,1) both}
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap .search-box{width:100%;padding:10px 36px 10px 14px;margin-bottom:0;box-sizing:border-box}
+.search-clear{position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#6a5020;font-size:18px;cursor:pointer;padding:4px;line-height:1;display:none}
+.search-clear:hover{color:#DAA520}
+.scroll-top{position:fixed;bottom:72px;left:14px;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2a1a00,#1a1000);border:1px solid #4a3010;color:#DAA520;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:900;box-shadow:0 2px 12px rgba(0,0,0,.5);transition:opacity .2s}
+.scroll-top.vis{display:flex}
 .modal-close{position:absolute;top:10px;left:10px;background:none;border:1px solid #3a2a0a;color:#a08020;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:inherit}
 .modal-close:hover{border-color:#DAA520;color:#DAA520}
 .modal-num{font-size:10px;color:#6a5020;letter-spacing:3px;text-align:center;margin-bottom:5px}
@@ -390,7 +398,10 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
       <div style="font-size:10px;color:#6a5420;margin-bottom:8px">צבע לכל אות בנפרד:</div>
       <div id="per-letter-panel" style="font-size:11px;color:#9a7840">לחץ על שם כדי לפתוח ולצבוע אות-אות</div>
     </div>
-    <input class="search-box" type="text" placeholder="🔍 חפש שם, סגולה או פסוק..." oninput="filterNames(this.value)">
+    <div class="search-wrap">
+      <input class="search-box" id="search-input" type="text" placeholder="🔍 חפש שם, סגולה או פסוק..." oninput="filterNames(this.value)">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()" title="נקה חיפוש">×</button>
+    </div>
     <div class="count-label" id="count-label">72 שמות</div>
     <div class="names-grid" id="names-grid"></div>
   </div>
@@ -572,6 +583,9 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
   </div>
 
 </div>
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scroll-top-btn" onclick="scrollToTop()" title="חזור לראש">↑</button>
 
 <!-- MODAL -->
 <div class="overlay" id="modal-overlay" onclick="closeModalOutside(event)">
@@ -1947,8 +1961,14 @@ function spinWheel(){
 
 function filterNames(q){
   const list=currentType==='A'?NAMES_A:NAMES_B;
-  const f=list.filter(n=>n.name.includes(q)||n.segula.includes(q)||n.pasuk.includes(q));
+  const f=q?list.filter(n=>n.name.includes(q)||n.segula.includes(q)||(n.pasuk&&n.pasuk.includes(q))):list;
   renderNames(f);
+  const cl=document.getElementById('search-clear');
+  if(cl) cl.style.display=q?'block':'none';
+}
+function clearSearch(){
+  const inp=document.getElementById('search-input');
+  if(inp){inp.value='';filterNames('');inp.focus();}
 }
 
 // ===== EXTRA NAMES DATA =====
@@ -4674,6 +4694,16 @@ function shvCheckItem(el) {
   const icon=el.querySelector('.shv-cicon');
   if(icon) icon.textContent=el.classList.contains('done')?'☑':'☐';
 }
+
+/* ---- SCROLL TO TOP ---- */
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
+(function(){
+  const btn=document.getElementById('scroll-top-btn');
+  if(!btn) return;
+  window.addEventListener('scroll',function(){
+    btn.classList.toggle('vis', window.scrollY > 300);
+  },{passive:true});
+})();
 
 /* ---- ABOUT / SHARE ---- */
 const APK_URL='https://github.com/emona501-prog/-shemot-kodesh/releases/download/v1.0.0/shemot-kodesh.apk';
