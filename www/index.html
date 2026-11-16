@@ -2571,7 +2571,7 @@ function renderCircle(){
   /* the name element — animates via JS */
   .dr-name-wrap{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    z-index:6;pointer-events:none;
+    z-index:6;pointer-events:none;direction:ltr;
   }
   .dr-name{
     font-family:'Noto Serif Hebrew',David,serif;
@@ -2581,6 +2581,7 @@ function renderCircle(){
     text-align:center;
     will-change:transform,opacity,filter;
     line-height:1;
+    transform-origin:center center;
   }
 
   /* ---- INFO CARD ---- */
