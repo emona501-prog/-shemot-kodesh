@@ -2546,11 +2546,21 @@ function renderCircle(){
   /* fade left & right (name travels horizontally) */
   .dr-stage::before,.dr-stage::after{
     content:'';position:absolute;top:0;bottom:0;z-index:10;pointer-events:none;
+    transition:opacity .4s;
   }
   .dr-stage::before{left:0;width:80px;
     background:linear-gradient(to right,#09090f 20%,transparent 100%);}
   .dr-stage::after{right:0;width:80px;
     background:linear-gradient(to left,#09090f 20%,transparent 100%);}
+  /* מצב אנכי — מסתיר fade צדדי, מציג fade עליון/תחתון */
+  .dr-stage.vert::before,.dr-stage.vert::after{opacity:0;}
+  .dr-fade-top,.dr-fade-bot{
+    position:absolute;left:0;right:0;z-index:10;pointer-events:none;
+    opacity:0;transition:opacity .4s;
+  }
+  .dr-fade-top{top:0;height:72px;background:linear-gradient(to bottom,#09090f 10%,transparent 100%);}
+  .dr-fade-bot{bottom:0;height:90px;background:linear-gradient(to top,#09090f 20%,transparent 100%);}
+  .dr-stage.vert .dr-fade-top,.dr-stage.vert .dr-fade-bot{opacity:1;}
 
   /* subtle center glow */
   .dr-glow{
@@ -2611,6 +2621,8 @@ function renderCircle(){
 
   <div class="dr-stage" id="dr-stage">
     <div class="dr-glow"></div>
+    <div class="dr-fade-top"></div>
+    <div class="dr-fade-bot"></div>
     <div class="dr-name-wrap"><div class="dr-name" id="dr-name">והו</div></div>
   </div>
 
@@ -2642,7 +2654,22 @@ function renderCircle(){
     <button class="nk-btn" id="drum-col-on" onclick="setDrumColor(true)" style="font-size:10px;padding:4px 10px">🎨 צבעוני</button>
     <button class="nk-btn nk-active" id="drum-col-off" onclick="setDrumColor(false)" style="font-size:10px;padding:4px 10px">לבן</button>
   </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+    <span style="font-size:10px;color:#5a4020;letter-spacing:2px">כיוון:</span>
+    <button class="nk-btn nk-active" id="dc-dir-h" onclick="setDrumDir('h')" style="font-size:10px;padding:4px 12px">◀ אופקי ▶</button>
+    <button class="nk-btn" id="dc-dir-v" onclick="setDrumDir('v')" style="font-size:10px;padding:4px 12px">↓ אנכי</button>
+  </div>
 </div>`;
+
+  // אתחול כיוון שמור
+  const _savedDir = localStorage.getItem('drumDir') || 'h';
+  drumDir = _savedDir;
+  const _stageEl = document.getElementById('dr-stage');
+  if(_stageEl) _stageEl.classList.toggle('vert', _savedDir === 'v');
+  const _bh = document.getElementById('dc-dir-h');
+  const _bv = document.getElementById('dc-dir-v');
+  if(_bh){ _bh.classList.toggle('nk-active', _savedDir==='h'); }
+  if(_bv){ _bv.classList.toggle('nk-active', _savedDir==='v'); }
 
   updateDrumCard(circleIdx);
   drumAnimateName(circleIdx);
@@ -2650,19 +2677,38 @@ function renderCircle(){
 
 /* ---- Animate a single name sweeping top→center→bottom ---- */
 let drumRAF = null;
+let drumDir = localStorage.getItem('drumDir') || 'h'; // 'h'=אופקי  'v'=אנכי
+
+function setDrumDir(d){
+  drumDir = d;
+  localStorage.setItem('drumDir', d);
+  const stage = document.getElementById('dr-stage');
+  if(stage) stage.classList.toggle('vert', d === 'v');
+  const bh = document.getElementById('dc-dir-h');
+  const bv = document.getElementById('dc-dir-v');
+  if(bh){ bh.classList.toggle('nk-active', d==='h'); }
+  if(bv){ bv.classList.toggle('nk-active', d==='v'); }
+  if(circleRunning){ stopCircle(); startCircle(); }
+  else {
+    const el = document.getElementById('dr-name');
+    if(el){
+      if(d==='v') { el.style.transform='translateY(0) scale(1)'; }
+      else        { el.style.transform='translateX(0) scale(1) rotateY(0deg)'; }
+      el.style.opacity='1'; el.style.filter='blur(0)'; el.style.fontSize='80px';
+    }
+  }
+}
 
 function drumAnimateName(idx){
   const el = document.getElementById('dr-name');
   if(!el) return;
 
   const stage = document.getElementById('dr-stage');
-  const W = stage ? stage.offsetWidth : 340;
-  const startX  = -W * 0.60;   // enters from left horizon
-  const endX    =  W * 0.60;   // exits to right horizon
+  const W = stage ? stage.offsetWidth  : 340;
+  const H = stage ? stage.offsetHeight : 260;
 
-  const dur = circleSpeed;      // full arc duration = one slot
+  const dur = circleSpeed;
   const t0  = performance.now();
-
   cancelAnimationFrame(drumRAF);
 
   // Use nikud / color from settings
@@ -2673,47 +2719,92 @@ function drumAnimateName(idx){
   el.textContent = _dispName;
   const _baseColor = (drumColorMode && _ext) ? _ext.color : '#FFD700';
 
+  // הכנת צבע בסיס ל-RGB
+  const _r=parseInt(_baseColor.slice(1,3),16)||218;
+  const _g=parseInt(_baseColor.slice(3,5),16)||165;
+  const _b=parseInt(_baseColor.slice(5,7),16)||32;
+
+  // ════════════════════════════════════════════
+  // אנכי — שמות יורדים מלמעלה, דוהים לפני התחתית
+  // ════════════════════════════════════════════
+  if(drumDir === 'v'){
+    const startY = -H * 0.44;   // מתחיל מעל המרכז
+    const endY   =  H * 0.46;   // מגיע כמעט לתחתית (לא יוצא)
+
+    function stepV(now){
+      const p    = Math.min((now - t0) / dur, 1);
+      const arcT = p;
+
+      // מיקום — ירידה ישרה
+      const y = startY + (endY - startY) * arcT;
+
+      // opacity — כניסה מהירה, אחיזה, יציאה מדורגת לפני התחתית
+      let opa;
+      if     (arcT < 0.18) opa = arcT / 0.18;          // fade-in מהיר
+      else if(arcT < 0.62) opa = 1;                      // גלוי מלא
+      else                 opa = 1 - (arcT - 0.62) / 0.38; // fade-out רך לפני התחתית
+
+      // גודל — גדל קצת ואז נשאר יציב (לא מתכווץ חזרה)
+      const scl = 0.55 + 0.45 * Math.min(arcT / 0.3, 1);
+
+      // גופן — גדול ויציב
+      const fs = 56 + 24 * Math.min(arcT / 0.3, 1) * (arcT < 0.75 ? 1 : (1-arcT)*4);
+      el.style.fontSize = Math.max(40, fs).toFixed(0) + 'px';
+
+      // טשטוש — רק בהיעלמות
+      const blur = arcT > 0.65 ? ((arcT - 0.65) / 0.35) * 8 : 0;
+
+      // הטיה קלה בציר X (מגיע מלמעלה)
+      const rx = (1 - Math.min(arcT / 0.3, 1)) * 18;
+
+      el.style.transform  = `translateY(${y.toFixed(1)}px) scale(${scl.toFixed(3)}) rotateX(${rx.toFixed(1)}deg)`;
+      el.style.opacity    = Math.max(0, opa).toFixed(3);
+      el.style.filter     = blur > 0 ? `blur(${blur.toFixed(1)}px)` : 'none';
+
+      // צבע + זוהר
+      const _fade = 1 - opa;
+      el.style.color = `rgb(${Math.round(_r+Math.round((255-_r)*_fade))},${Math.round(_g+Math.round((255-_g)*_fade))},${Math.round(_b+Math.round((255-_b)*_fade))})`;
+      el.style.textShadow = opa > 0.2
+        ? `0 0 ${(28*opa).toFixed(0)}px ${_baseColor}${Math.round(opa*.65*255).toString(16).padStart(2,'0')},0 0 ${(60*opa).toFixed(0)}px ${_baseColor}${Math.round(opa*.28*255).toString(16).padStart(2,'0')}`
+        : 'none';
+
+      if(p < 1){ drumRAF = requestAnimationFrame(stepV); }
+      // עדכן כרטיס בשיא הנראות
+      if(arcT >= 0.36 && arcT <= 0.42) updateDrumCard(idx);
+    }
+    drumRAF = requestAnimationFrame(stepV);
+    return;
+  }
+
+  // ════════════════════════════════════════════
+  // אופקי — גלגל המקורי מצד לצד
+  // ════════════════════════════════════════════
+  const startX  = -W * 0.60;
+  const endX    =  W * 0.60;
+
   function step(now){
-    const p = Math.min((now - t0) / dur, 1);   // 0..1
-
-    // position along arc: name travels from one horizon through the person to the other
-    const arcT = p;                             // 0..1 linear progress
+    const p = Math.min((now - t0) / dur, 1);
+    const arcT = p;
     const x    = startX + (endX - startX) * arcT;
-
-    // scale: grows from ~.15 → 1 → ~.15  (bell via sin — large at center = closest to person)
     const scl  = 0.15 + 0.85 * Math.sin(arcT * Math.PI);
-
-    // opacity: same bell
     const opa  = Math.sin(arcT * Math.PI);
-
-    // 3-D tilt: approaches from left (angled) → faces you at center → recedes to right
-    const ry   = (0.5 - arcT) * 60;           // +30° … 0° … -30°
-
-    // blur: sharp at center, soft at edges (horizon effect)
+    const ry   = (0.5 - arcT) * 60;
     const blur = (1 - Math.sin(arcT * Math.PI)) * 6;
 
     el.style.transform = `translateX(${x.toFixed(1)}px) scale(${scl.toFixed(3)}) rotateY(${ry.toFixed(1)}deg)`;
     el.style.opacity   = opa.toFixed(3);
     el.style.filter    = `blur(${blur.toFixed(1)}px)`;
 
-    // dynamic font size — big in center
     const fs = 38 + 56 * Math.sin(arcT * Math.PI);
     el.style.fontSize  = fs.toFixed(1)+'px';
 
-    // dynamic glow using sefira color
-    const _r=parseInt(_baseColor.slice(1,3),16)||218;
-    const _g=parseInt(_baseColor.slice(3,5),16)||165;
-    const _b=parseInt(_baseColor.slice(5,7),16)||32;
     const _fade=1-Math.sin(arcT*Math.PI);
     el.style.color=`rgb(${Math.round(_r+Math.round((255-_r)*_fade))},${Math.round(_g+Math.round((255-_g)*_fade))},${Math.round(_b+Math.round((255-_b)*_fade))})`;
     el.style.textShadow = opa > 0.3
       ? `0 0 ${(30*Math.sin(arcT*Math.PI)).toFixed(0)}px ${_baseColor}${Math.round(opa*.7*255).toString(16).padStart(2,'0')},0 0 ${(70*Math.sin(arcT*Math.PI)).toFixed(0)}px ${_baseColor}${Math.round(opa*.3*255).toString(16).padStart(2,'0')}`
       : 'none';
 
-    if(p < 1){
-      drumRAF = requestAnimationFrame(step);
-    }
-    // at peak (p≈0.5) update the card
+    if(p < 1){ drumRAF = requestAnimationFrame(step); }
     if(p >= 0.48 && p <= 0.52) updateDrumCard(idx);
   }
 
@@ -2755,7 +2846,7 @@ function stopCircle(){
   // freeze at center
   const el = document.getElementById('dr-name');
   if(el){
-    el.style.transform='translateX(0) scale(1) rotateY(0deg)';
+    el.style.transform = drumDir==='v' ? 'translateY(0) scale(1)' : 'translateX(0) scale(1) rotateY(0deg)';
     el.style.opacity='1';
     el.style.filter='blur(0)';
     el.style.fontSize='80px';
@@ -2789,7 +2880,7 @@ function drumManual(dir){
     if(drumNikudMode==='auto'&&_dm_ext) _dm_name=_dm_ext.nikud;
     else if(drumNikudMode==='manual'&&manualNikud[circleIdx+1]) _dm_name=manualNikud[circleIdx+1];
     el.textContent=_dm_name;
-    el.style.transform='translateX(0) scale(1) rotateY(0deg)';
+    el.style.transform = drumDir==='v' ? 'translateY(0) scale(1)' : 'translateX(0) scale(1) rotateY(0deg)';
     el.style.opacity='1';
     el.style.filter='blur(0)';
     el.style.fontSize='80px';
