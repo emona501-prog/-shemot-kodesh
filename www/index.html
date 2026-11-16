@@ -332,6 +332,7 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
   <button class="nav-btn" onclick="showView('shinun')">🧠 שינון</button>
   <button class="nav-btn" onclick="showView('methods')">🌟 שוויתי</button>
   <button class="nav-btn" onclick="showView('favorites')">★ החדר הפרטי</button>
+  <button class="nav-btn" onclick="showView('about')">ℹ אודות</button>
 </div>
 
 <div class="main">
@@ -465,6 +466,108 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
     <div class="fav-view">
       <div style="font-size:15px;color:#7a6030;margin-bottom:18px;text-align:center">✦ החדר הפרטי שלך — שמות שבחרת לשמור ✦</div>
       <div id="fav-content"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT VIEW -->
+  <div id="view-about" style="display:none">
+    <div style="max-width:520px;margin:0 auto;padding:10px 4px 40px;direction:rtl">
+
+      <!-- כותרת -->
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:28px;color:#DAA520;text-shadow:0 0 20px #DAA52088;margin-bottom:6px">שמות הקודש</div>
+        <div style="font-size:13px;color:#8a7040;letter-spacing:2px">ע"ב שמות עם מערכת חכמה</div>
+      </div>
+
+      <!-- שתף אפליקציה -->
+      <div style="background:linear-gradient(135deg,#1a1200,#120d00);border:1px solid #3a2800;border-radius:16px;padding:22px 20px;margin-bottom:18px;text-align:center">
+        <div style="font-size:14px;color:#DAA520;font-weight:700;margin-bottom:6px">📲 שתף אפליקציה</div>
+        <div style="font-size:12px;color:#8a7040;margin-bottom:16px">שלח לחבר או בן משפחה את קובץ ההתקנה</div>
+        <a href="https://github.com/emona501-prog/-shemot-kodesh/releases/download/v1.0.0/shemot-kodesh.apk"
+           onclick="shareApp(event)"
+           style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#DAA520,#B8860B);
+                  color:#0a0800;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;
+                  font-family:inherit;box-shadow:0 4px 20px #DAA52044">
+          ⬇ הורד והתקן את האפליקציה
+        </a>
+        <div style="margin-top:12px">
+          <button onclick="copyLink()" style="background:none;border:1px solid #3a2800;color:#8a7040;
+                  padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit">
+            🔗 העתק קישור להורדה
+          </button>
+        </div>
+        <div id="copy-confirm" style="color:#4CAF50;font-size:11px;margin-top:6px;display:none">✓ הקישור הועתק!</div>
+      </div>
+
+      <!-- הוראות התקנה -->
+      <div style="background:#0e0900;border:1px solid #2a1a00;border-radius:14px;margin-bottom:18px">
+        <button onclick="toggleInstall()" style="width:100%;background:none;border:none;padding:16px 20px;
+                color:#DAA520;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+                display:flex;justify-content:space-between;align-items:center;direction:rtl">
+          <span>📋 הוראות התקנה</span>
+          <span id="install-arrow" style="font-size:11px;color:#6a5020">▼</span>
+        </button>
+        <div id="install-panel" style="display:none;padding:0 20px 20px">
+          <div style="font-size:12px;color:#8a7040;line-height:2;border-top:1px solid #2a1a00;padding-top:14px">
+            <div style="color:#c8a860;font-weight:600;margin-bottom:10px">📱 להתקנה על טלפון אנדרואיד:</div>
+            <div style="margin-bottom:8px">1️⃣ לחץ על כפתור "הורד והתקן" למעלה — יורד קובץ APK</div>
+            <div style="margin-bottom:8px">2️⃣ פתח את קובץ ה-APK מתיקיית ההורדות שלך</div>
+            <div style="margin-bottom:8px">3️⃣ אם מופיעה הודעה "התקנה מגורמים לא ידועים" — לחץ על <strong style="color:#DAA520">הגדרות</strong> ואפשר התקנה</div>
+            <div style="margin-bottom:8px">4️⃣ לחץ על <strong style="color:#DAA520">התקן</strong></div>
+            <div style="margin-bottom:14px">5️⃣ האפליקציה מופיעה על המסך — פתח ותהנה! 🌟</div>
+            <div style="background:#1a1200;border-radius:8px;padding:10px 12px;border:1px solid #2a1800;font-size:11px;color:#6a5020">
+              💡 <strong style="color:#8a7040">שים לב:</strong> אפליקציה זו עובדת רק על טלפון <strong style="color:#8a7040">אנדרואיד</strong>.
+              למשתמשי iPhone — ניתן לפתוח את הקישור בדפדפן ולהוסיף לשולחן הבית.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- על האפליקציה -->
+      <div style="background:#0e0900;border:1px solid #2a1a00;border-radius:14px;padding:20px;margin-bottom:18px">
+        <div style="font-size:14px;color:#DAA520;font-weight:700;margin-bottom:12px">✨ על האפליקציה</div>
+        <div style="font-size:13px;color:#9a8060;line-height:1.9">
+          אפליקציה ייחודית ללימוד וכוונה בע"ב שמות הקודש —
+          עם סגולות, פסוקים, תפילות, מעגל השמות, גלגל הגורל, תהלים קי"ט,
+          שינון, שוויתי ועוד. מיועדת לכל מי שרוצה להתקרב לקדושת השמות ולהעמיק בהם.
+        </div>
+      </div>
+
+      <!-- קרדיטים -->
+      <div style="background:linear-gradient(135deg,#140e00,#0e0900);border:1px solid #3a2500;border-radius:14px;padding:22px 20px;margin-bottom:18px">
+        <div style="font-size:14px;color:#DAA520;font-weight:700;margin-bottom:14px;text-align:center">📚 מקורות ותודות</div>
+
+        <div style="border-bottom:1px solid #2a1800;padding-bottom:16px;margin-bottom:16px">
+          <div style="font-size:15px;color:#c8a860;font-weight:700;margin-bottom:6px">ספר עץ נחמד</div>
+          <div style="font-size:12px;color:#8a7040;line-height:1.9;margin-bottom:10px">
+            המקור העיקרי לסגולות, ביאורים ומקורות שמות הקודש באפליקציה זו
+            הוא <strong style="color:#c8a860">ספר עץ נחמד</strong> — ספר יסוד ונפלא
+            בנושא ע"ב שמות הקודש.
+          </div>
+          <div style="background:#1a1200;border-radius:10px;padding:12px 14px;border:1px solid #3a2500">
+            <div style="font-size:12px;color:#9a8050;margin-bottom:4px">לרכישת הספר — <strong style="color:#DAA520">רב אברהם ידידיה</strong></div>
+            <a href="tel:052-766-7806" style="font-size:17px;color:#DAA520;font-weight:700;text-decoration:none;letter-spacing:1px">
+              📞 052-766-7806
+            </a>
+            <div style="font-size:11px;color:#5a4020;margin-top:4px">מומלץ בחום לכל מתעניין בשמות הקודש</div>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:#6a5020;line-height:2">
+          <div style="color:#8a7040;font-weight:600;margin-bottom:8px">מקורות נוספים:</div>
+          <div>• ספר הגבורה</div>
+          <div>• פרדס רימונים</div>
+          <div>• ספר רזיאל המלאך</div>
+          <div>• כתבי הרמ"ד וואלי</div>
+          <div>• כתבי האר"י הקדוש</div>
+        </div>
+      </div>
+
+      <!-- גרסה -->
+      <div style="text-align:center;font-size:11px;color:#3a2a10;margin-top:20px">
+        גרסה 1.0.0 · כל הזכויות שמורות
+      </div>
+
     </div>
   </div>
 
@@ -1488,7 +1591,7 @@ function saveNotes(){localStorage.setItem('notes72',JSON.stringify(notes))}
 
 function showView(v){
   currentView=v;
-  const ALL_VIEWS=['home','wheel','verses','circle','extra','calendar','tehilim','shinun','methods','favorites'];
+  const ALL_VIEWS=['home','wheel','verses','circle','extra','calendar','tehilim','shinun','methods','favorites','about'];
   ALL_VIEWS.forEach(n=>{
     const el=document.getElementById('view-'+n);
     if(el) el.style.display=(v===n)?'block':'none';
@@ -4570,6 +4673,40 @@ function shvCheckItem(el) {
   el.classList.toggle('done');
   const icon=el.querySelector('.shv-cicon');
   if(icon) icon.textContent=el.classList.contains('done')?'☑':'☐';
+}
+
+/* ---- ABOUT / SHARE ---- */
+const APK_URL='https://github.com/emona501-prog/-shemot-kodesh/releases/download/v1.0.0/shemot-kodesh.apk';
+function shareApp(e){
+  if(navigator.share){
+    e.preventDefault();
+    navigator.share({title:'שמות הקודש',text:'אפליקציית שמות הקודש — לימוד ע"ב שמות עם סגולות ותפילות',url:APK_URL})
+      .catch(()=>{});
+  }
+}
+function copyLink(){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(APK_URL).then(()=>{showCopyConfirm();}).catch(()=>fallbackCopy());
+  } else { fallbackCopy(); }
+}
+function fallbackCopy(){
+  const ta=document.createElement('textarea');
+  ta.value=APK_URL; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy');showCopyConfirm();}catch(e){}
+  document.body.removeChild(ta);
+}
+function showCopyConfirm(){
+  const el=document.getElementById('copy-confirm');
+  if(el){el.style.display='block';setTimeout(()=>{el.style.display='none';},2500);}
+}
+function toggleInstall(){
+  const p=document.getElementById('install-panel');
+  const a=document.getElementById('install-arrow');
+  if(!p) return;
+  const open=p.style.display==='block';
+  p.style.display=open?'none':'block';
+  if(a) a.textContent=open?'▼':'▲';
 }
 </script>
 </body>
