@@ -2728,49 +2728,51 @@ function drumAnimateName(idx){
   // אנכי — שמות יורדים מלמעלה, דוהים לפני התחתית
   // ════════════════════════════════════════════
   if(drumDir === 'v'){
-    const startY = -H * 0.44;   // מתחיל מעל המרכז
-    const endY   =  H * 0.04;   // מגיע עד קו האמצע בלבד ונעלם שם
+    const startY   = -H * 0.44;  // מתחיל מלמעלה
+    const boundaryY = -H * 0.02; // קו הגבול — לא יורדים מתחתיו
 
     function stepV(now){
       const p    = Math.min((now - t0) / dur, 1);
       const arcT = p;
 
-      // מיקום — ירידה ישרה
-      const y = startY + (endY - startY) * arcT;
+      let y, scl, opa, blur, rx, fs;
 
-      // opacity — כניסה מהירה, אחיזה, יציאה מדורגת לפני קו האמצע
-      let opa;
-      if     (arcT < 0.18) opa = arcT / 0.18;          // fade-in מהיר
-      else if(arcT < 0.52) opa = 1;                      // גלוי מלא
-      else                 opa = 1 - (arcT - 0.52) / 0.48; // fade-out — נמס עד קו האמצע
+      if (arcT < 0.56) {
+        // ── שלב א׳: ירידה מלמעלה עד הגבול ──
+        const p1 = arcT / 0.56;
+        y    = startY + (boundaryY - startY) * p1;
+        scl  = 0.55 + 0.45 * p1;
+        opa  = arcT < 0.18 ? arcT / 0.18 : 1;
+        blur = 0;
+        rx   = (1 - p1) * 18;
+        fs   = 46 + 30 * p1;
+      } else {
+        // ── שלב ב׳: מתפשט כאור ונבלע — לא יורד עוד ──
+        const p2 = (arcT - 0.56) / 0.44; // 0→1
+        y    = boundaryY;                 // עומד בגבול
+        scl  = 1.0 + p2 * 1.8;           // מתרחב כמו אור
+        opa  = 1 - p2;                    // נמס
+        blur = p2 * 18;                   // מתפזר כאור
+        rx   = 0;
+        fs   = 76;
+      }
 
-      // גודל — גדל קצת ואז נשאר יציב (לא מתכווץ חזרה)
-      const scl = 0.55 + 0.45 * Math.min(arcT / 0.3, 1);
-
-      // גופן — גדול ויציב
-      const fs = 56 + 24 * Math.min(arcT / 0.3, 1) * (arcT < 0.75 ? 1 : (1-arcT)*4);
-      el.style.fontSize = Math.max(40, fs).toFixed(0) + 'px';
-
-      // טשטוש — מתחיל עם הדהייה, מתגבר
-      const blur = arcT > 0.52 ? ((arcT - 0.52) / 0.48) * 12 : 0;
-
-      // הטיה קלה בציר X (מגיע מלמעלה)
-      const rx = (1 - Math.min(arcT / 0.3, 1)) * 18;
-
+      el.style.fontSize   = fs.toFixed(0) + 'px';
       el.style.transform  = `translateY(${y.toFixed(1)}px) scale(${scl.toFixed(3)}) rotateX(${rx.toFixed(1)}deg)`;
       el.style.opacity    = Math.max(0, opa).toFixed(3);
       el.style.filter     = blur > 0 ? `blur(${blur.toFixed(1)}px)` : 'none';
 
-      // צבע + זוהר
-      const _fade = 1 - opa;
+      // צבע + זוהר — בהתפשטות: זוהר מוגבר כאור
+      const _fade = 1 - Math.min(opa, 1);
       el.style.color = `rgb(${Math.round(_r+Math.round((255-_r)*_fade))},${Math.round(_g+Math.round((255-_g)*_fade))},${Math.round(_b+Math.round((255-_b)*_fade))})`;
-      el.style.textShadow = opa > 0.2
-        ? `0 0 ${(28*opa).toFixed(0)}px ${_baseColor}${Math.round(opa*.65*255).toString(16).padStart(2,'0')},0 0 ${(60*opa).toFixed(0)}px ${_baseColor}${Math.round(opa*.28*255).toString(16).padStart(2,'0')}`
+      const _glowR = arcT > 0.56 ? (arcT-0.56)/0.44 : 0;
+      el.style.textShadow = opa > 0.05
+        ? `0 0 ${(28*opa + 60*_glowR).toFixed(0)}px ${_baseColor}${Math.round(opa*.65*255).toString(16).padStart(2,'0')},0 0 ${(80*_glowR).toFixed(0)}px ${_baseColor}55`
         : 'none';
 
       if(p < 1){ drumRAF = requestAnimationFrame(stepV); }
       // עדכן כרטיס בשיא הנראות
-      if(arcT >= 0.36 && arcT <= 0.42) updateDrumCard(idx);
+      if(arcT >= 0.36 && arcT <= 0.44) updateDrumCard(idx);
     }
     drumRAF = requestAnimationFrame(stepV);
     return;
