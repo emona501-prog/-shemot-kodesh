@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:layoutDirection="rtl" android:background="@drawable/widget_bg" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="4dp" android:paddingBottom="4dp">
-    <TextView android:id="@+id/w_heb" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFF3D78E" android:textSize="14sp" android:textStyle="bold" android:maxLines="1" />
-    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:layout_marginStart="10dp" android:gravity="center_vertical">
-        <LinearLayout android:id="@+id/w_zrow" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-            <TextView android:id="@+id/w_zl" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FFF6EFDC" android:textSize="12sp" android:maxLines="1" android:ellipsize="end" />
-            <Chronometer android:id="@+id/w_cd" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFF3D78E" android:textSize="12sp" android:textStyle="bold" android:layout_marginStart="4dp" />
-        </LinearLayout>
-        <ViewFlipper android:id="@+id/w_flip" android:layout_width="match_parent" android:layout_height="20dp" android:autoStart="true" android:flipInterval="4500" android:inAnimation="@android:anim/fade_in" android:outAnimation="@android:anim/fade_out" />
+<!-- וידג'ט נמוך (שורה אחת): השם באמצע, חצים בצדדים; לחיצה על השם מגרילה -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent" android:layoutDirection="rtl" android:background="@drawable/widget_bg" android:orientation="horizontal" android:gravity="center_vertical" android:padding="6dp">
+    <TextView android:id="@+id/b_prev" android:layout_width="38dp" android:layout_height="match_parent" android:gravity="center" android:maxLines="1" android:background="@drawable/widget_btn" android:textColor="#FFF6EFDC" android:textSize="20sp" android:text="›" />
+    <LinearLayout android:id="@+id/w_tap" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="6dp" android:layout_marginEnd="6dp">
+        <TextView android:id="@+id/w_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFF3D78E" android:textSize="24sp" android:textStyle="bold" android:maxLines="1" />
+        <TextView android:id="@+id/w_segula" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textColor="#FFE4DAC2" android:textSize="11sp" android:maxLines="1" android:ellipsize="end" android:textDirection="rtl" />
     </LinearLayout>
-    <ImageView android:id="@+id/w_yt" android:layout_width="24dp" android:layout_height="24dp" android:layout_marginStart="8dp" android:src="@drawable/widget_yt" android:contentDescription="ערוץ גאולה וישועה" android:scaleType="fitCenter" />
+    <TextView android:id="@+id/b_open" android:layout_width="38dp" android:layout_height="match_parent" android:gravity="center" android:maxLines="1" android:background="@drawable/widget_btn" android:layout_marginEnd="4dp" android:textColor="#FFF3D78E" android:textSize="15sp" android:text="↗" />
+    <TextView android:id="@+id/b_next" android:layout_width="38dp" android:layout_height="match_parent" android:gravity="center" android:maxLines="1" android:background="@drawable/widget_btn" android:textColor="#FFF6EFDC" android:textSize="20sp" android:text="‹" />
 </LinearLayout>

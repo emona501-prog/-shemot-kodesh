@@ -33,6 +33,9 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.chaiproductions.shemotkodesh.WIDGET_UPDATE" />
                 <action android:name="com.chaiproductions.shemotkodesh.WIDGET_SPIN" />
+                <action android:name="com.chaiproductions.shemotkodesh.WIDGET_NEXT" />
+                <action android:name="com.chaiproductions.shemotkodesh.WIDGET_PREV" />
+                <action android:name="com.chaiproductions.shemotkodesh.WIDGET_AUTO" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
