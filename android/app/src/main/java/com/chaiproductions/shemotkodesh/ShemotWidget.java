@@ -18,6 +18,12 @@ public class ShemotWidget extends AppWidgetProvider {
 
     static final int    UPDATE_MINUTES = 5;
     static final String ACTION_UPDATE  = "com.chaiproductions.shemotkodesh.WIDGET_UPDATE";
+    static final String ACTION_SPIN    = "com.chaiproductions.shemotkodesh.WIDGET_SPIN";
+    static final String PREFS_NAME     = "ShemotWidgetPrefs";
+    static final String PREF_SPIN_IDX  = "spinIdx";
+    static final String PREF_SPIN_TIME = "spinTime";
+    // ספין שמור תקף ל-10 דקות — אחרי כן חוזר לסדר הכרונולוגי
+    static final long   SPIN_EXPIRY_MS = 10 * 60 * 1000L;
 
     // ══════════════════════════════════════════════════════════
     // ע"ב שמות הקודש
@@ -79,11 +85,26 @@ public class ShemotWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context ctx, Intent intent) {
         super.onReceive(ctx, intent);
-        if (ACTION_UPDATE.equals(intent.getAction())) {
+        String action = intent.getAction();
+
+        if (ACTION_UPDATE.equals(action)) {
             AppWidgetManager awm = AppWidgetManager.getInstance(ctx);
             int[] ids = awm.getAppWidgetIds(new ComponentName(ctx, ShemotWidget.class));
             for (int id : ids) updateWidget(ctx, awm, id);
             scheduleNext(ctx);
+
+        } else if (ACTION_SPIN.equals(action)) {
+            // בחר שם אקראי ושמור ב-SharedPreferences
+            int randomIdx = new java.util.Random().nextInt(72);
+            ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+               .edit()
+               .putInt(PREF_SPIN_IDX,  randomIdx)
+               .putLong(PREF_SPIN_TIME, System.currentTimeMillis())
+               .apply();
+            // עדכן את כל הווידג'טים עם השם החדש
+            AppWidgetManager awm = AppWidgetManager.getInstance(ctx);
+            int[] ids = awm.getAppWidgetIds(new ComponentName(ctx, ShemotWidget.class));
+            for (int id : ids) updateWidget(ctx, awm, id);
         }
     }
 
@@ -98,9 +119,18 @@ public class ShemotWidget extends AppWidgetProvider {
     // ══════════════════════════════════════════════════════════
 
     static void updateWidget(Context ctx, AppWidgetManager awm, int widgetId) {
-        // אינדקס השם הנוכחי — מחזור כל UPDATE_MINUTES דקות
-        long mins    = System.currentTimeMillis() / (1000L * 60);
-        int  nameIdx = (int)((mins / UPDATE_MINUTES) % 72);
+        // אינדקס השם — אם יש ספין שמור ועדיין תקף נשתמש בו, אחרת סדר כרונולוגי
+        android.content.SharedPreferences prefs =
+                ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        long spinTime = prefs.getLong(PREF_SPIN_TIME, 0);
+        boolean isSpun = (System.currentTimeMillis() - spinTime) < SPIN_EXPIRY_MS;
+        int nameIdx;
+        if (isSpun) {
+            nameIdx = prefs.getInt(PREF_SPIN_IDX, 0);
+        } else {
+            long mins = System.currentTimeMillis() / (1000L * 60);
+            nameIdx   = (int)((mins / UPDATE_MINUTES) % 72);
+        }
 
         // צירוף חודשי — לפי חודש גרגוריאני בקירוב לעברי
         // ניסן מתחיל סביב מרץ: מרץ(2)=חודש 0, אפריל(3)=1 …
@@ -119,17 +149,28 @@ public class ShemotWidget extends AppWidgetProvider {
         rv.setImageViewBitmap(R.id.widget_wheel, wheel);
 
         // טקסטים
-        rv.setTextViewText(R.id.widget_tziruf, "צירוף " + monthName + ":  " + tziruf);
+        rv.setTextViewText(R.id.widget_tziruf, “צירוף “ + monthName + “:  “ + tziruf);
         rv.setTextViewText(R.id.widget_name,   NAMES[nameIdx]);
         rv.setTextViewText(R.id.widget_segula, SEGULOT[nameIdx]);
-        rv.setTextViewText(R.id.widget_num,    "שם " + (nameIdx + 1) + " מתוך ע“ב");
+        // כשיש ספין — סימן קטן ✶ במקום הסדר הרגיל; ע״ב = U+05F4 (gershayim) + ב
+        String numLabel = isSpun
+                ? “✶ שם “ + (nameIdx + 1) + “ ✶”
+                : “שם “ + (nameIdx + 1) + “ מתוך ע״ב”;
+        rv.setTextViewText(R.id.widget_num, numLabel);
 
-        // לחיצה — פתח אפליקציה
+        // לחיצה על שאר הווידג'ט — פתח אפליקציה
         Intent open = new Intent(ctx, MainActivity.class);
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(ctx, 0, open,
+        PendingIntent openPi = PendingIntent.getActivity(ctx, 0, open,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        rv.setOnClickPendingIntent(R.id.widget_root, pi);
+        rv.setOnClickPendingIntent(R.id.widget_root, openPi);
+
+        // לחיצה על הגלגל — סיבוב לשם אקראי (מחליפה את לחיצת ה-root לאזור הגלגל)
+        Intent spinIntent = new Intent(ctx, ShemotWidget.class);
+        spinIntent.setAction(ACTION_SPIN);
+        PendingIntent spinPi = PendingIntent.getBroadcast(ctx, widgetId + 1000,
+                spinIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        rv.setOnClickPendingIntent(R.id.widget_wheel, spinPi);
 
         awm.updateAppWidget(widgetId, rv);
     }
