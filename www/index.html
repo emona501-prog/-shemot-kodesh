@@ -328,6 +328,7 @@ textarea{font-size:16.5px;line-height:1.7;border-radius:10px;background:#110f19;
 html.spl-on body>*:not(#spl){visibility:hidden!important}
 html.spl-on #kd-warn,html.spl-on #kd-bar{display:none!important}
 #spl-ct{transform:translateZ(0);-webkit-transform:translateZ(0)}
+#wheelResult{scroll-margin-top:calc(var(--kdh) + 70px)}
 </style>
 </head>
 <body>
@@ -2073,6 +2074,8 @@ function spinWheel(){
   const btn=document.getElementById('spinBtn');
   btn.disabled=true;btn.textContent='✦ מסתובב... ✦';
   document.getElementById('wheelResult').classList.remove('show');
+  // בסיבוב חוזר — מחזיר את הגלגל אל מרכז המסך כדי שיראו אותו מסתובב
+  try{ const _sv=document.getElementById('wg').closest('svg'); if(_sv) _sv.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
   const list=currentType==='A'?NAMES_A:NAMES_B;
   const idx=Math.floor(Math.random()*72);
   spinAngle+=360*8+(idx/72)*360;
@@ -2087,7 +2090,10 @@ function spinWheel(){
     document.getElementById('wr-pasuk').textContent=res.pasuk||'כתבי האר"י הקדוש';
     document.getElementById('wr-tef').textContent=res.tefila?'להתפלל: '+res.tefila:'';
     document.getElementById('wr-detail').onclick=()=>openModal(res.id,currentType);
-    document.getElementById('wheelResult').classList.add('show');
+    const _wr=document.getElementById('wheelResult');
+    _wr.classList.add('show');
+    // מביא את השם שיצא אל מול העיניים, בלי צורך לגלול
+    setTimeout(()=>{ try{ _wr.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ _wr.scrollIntoView(); } },80);
     btn.disabled=false;btn.textContent='✦ סובב שוב ✦';
     saveWheelHistory(res);
   },4200);
