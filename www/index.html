@@ -737,7 +737,7 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
 
       <!-- גרסה -->
       <div style="text-align:center;font-size:14px;color:#c09d65;margin-top:20px">
-        גרסה 1.0.0 · כל הזכויות שמורות
+        גרסה <span id="app-ver">__APP_VERSION__</span> · כל הזכויות שמורות
       </div>
 
     </div>
@@ -5116,6 +5116,9 @@ function toggleInstall(){
   if(!spl||spl.style.display==='none'||spl.classList.contains('spl-off')) window.kdWarnStart();
 })();
 
+
+/* מספר הגרסה מוזרק בזמן הבנייה מתוך version.json */
+(function(){var e=document.getElementById('app-ver');if(e&&e.textContent.indexOf('__')===0)e.textContent='';})();
 </script>
 </body>
 </html>

@@ -32,6 +32,8 @@ jobs:
           P="$(printf '%s' "$KEYSTORE_PASS" | tr -d ' \r\n\t')"; echo "::add-mask::$P"; echo "KS_PASS=$P" >> "$GITHUB_ENV"
           echo "::notice::מפתח החתימה תקין"
       - run: npm ci || npm install
+      - name: הזרקת מספר הגרסה למסך "אודות"
+        run: sed -i "s/__APP_VERSION__/$(jq -r .version version.json)/g" www/index.html
       - run: npx cap sync android
       - name: גרסה
         id: ver
