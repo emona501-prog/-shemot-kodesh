@@ -5212,12 +5212,13 @@ function toggleInstall(){
   var hkEl=document.getElementById('hk-bar'),hkT=null,hkRunning=false;
   function hkActive(){var now=Date.now();return (hkLive.hk||[]).filter(function(h){return h&&h.u>now&&(h.s||0)<=now+6e4&&Array.isArray(h.n)&&h.n.length;});}
   function hkLine(h){if(h.t==='fr')return h.n.join(' · ');var T=HK_TY.filter(function(t){return t[0]===h.t;})[0]||HK_TY[0];return T[1]+(/ ל$/.test(T[1])?'':' ')+h.n.join(', ');}
+  function hkWhen(h){var d=((h.u||0)-(h.s||0))/864e5;return d<=2?'הלימוד היום מוקדש':d<=10?'הלימוד השבוע מוקדש':d<=45?'הלימוד החודש מוקדש':'הלימוד מוקדש';}
   function hkTick(){
     clearTimeout(hkT);if(!hkEl)return;
     if(!visible()){hkT=setTimeout(hkTick,1500);return;}
     var A=hkActive();
     var html=A.length
-      ?'<span class="hk-l">🕯️ הלימוד היום מוקדש</span>'+A.map(function(h){return '<b>'+esc(hkLine(h))+'</b>';}).join('<i>✦</i>')
+      ?A.map(function(h){return (h.t==='fr'?'':'<span class="hk-l">🕯️ '+hkWhen(h)+'</span>')+'<b>'+esc(hkLine(h))+'</b>';}).join('<i>✦</i>')
       :'<b>🕯️ הקדישו את הלימוד — לרפואה, לעילוי נשמת, להצלחה ולישועה</b><i>✦</i><span>18 ₪ לשם · לחצו כאן להקדשה</span>';
     hkRunning=true;
     var ok=runTicker(hkEl,html,55,function(){hkRunning=false;hkT=setTimeout(hkTick,900);});
