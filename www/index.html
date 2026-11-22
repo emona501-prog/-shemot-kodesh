@@ -324,6 +324,52 @@ html.spl-on body>*:not(#spl){visibility:hidden!important}
 html.spl-on #kd-warn,html.spl-on #kd-bar{display:none!important}
 #spl-ct{transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}
 #wheelResult{scroll-margin-top:calc(var(--kdh) + 70px)}
+
+/* ═══ פסים רצים: שמות וסגולות למעלה, הקדשות למטה ═══ */
+.tk{display:flex;align-items:center;overflow:hidden;user-select:none;-webkit-user-select:none;cursor:pointer;direction:rtl}
+.tk .tk-win{position:relative;flex:1;height:26px;overflow:hidden;white-space:nowrap}
+.tk .tk-run{position:absolute;left:0;top:0;line-height:26px;white-space:nowrap;will-change:transform;animation:tkRun 20s linear 1}
+@keyframes tkRun{from{transform:translateX(var(--a,-100%))}to{transform:translateX(var(--b,100%))}}
+#nm-tick{margin:6px -10px -6px;padding:2px 6px;background:linear-gradient(90deg,#120f1c,#1d1830,#120f1c);border-top:1px solid rgba(227,179,65,.45);text-align:right}
+#nm-tick .tk-run em{font-style:normal;display:inline-block;margin:0 4px;padding:0 4px}
+#nm-tick .tk-run em b{display:inline;font-size:18px;font-weight:700;color:#ffd97a;letter-spacing:1px}
+#nm-tick .tk-run em u{text-decoration:none;font-size:14.5px;color:#f1e8d2}
+#nm-tick .tk-run i{font-style:normal;color:#b8892b;margin:0 8px}
+#hk-bar{position:fixed;left:0;right:0;bottom:0;z-index:1400;height:calc(32px + env(safe-area-inset-bottom,0px));padding:3px 8px env(safe-area-inset-bottom,0px);background:linear-gradient(90deg,#2a1c08,#5a3d12,#2a1c08);border-top:1px solid rgba(227,179,65,.6);box-shadow:0 -3px 12px rgba(0,0,0,.5)}
+#hk-bar .tk-run{color:#f6e7c1;font-size:15px}
+#hk-bar .tk-run b{color:#ffd97a;font-weight:700}
+#hk-bar .tk-run i{font-style:normal;margin:0 12px;opacity:.75}
+#hk-bar .tk-run .hk-l{margin-inline-end:10px;color:#fff1d6}
+body{padding-bottom:calc(34px + env(safe-area-inset-bottom,0px))}
+.scroll-top{bottom:calc(46px + env(safe-area-inset-bottom,0px))!important}
+html.spl-on #hk-bar{display:none!important}
+@media print{#hk-bar,#nm-tick{display:none!important}}
+/* חלון הקדשה */
+.hx-ov{position:fixed;inset:0;z-index:2000;background:rgba(4,3,8,.82);display:flex;align-items:flex-end;justify-content:center}
+.hx-sheet{position:relative;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;background:linear-gradient(165deg,#1c1728,#110f19);border:1px solid rgba(227,179,65,.4);border-bottom:none;border-radius:22px 22px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));direction:rtl;color:#f1e8d2;animation:hxUp .25s ease}
+@keyframes hxUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.hx-x{position:absolute;top:10px;left:12px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(227,179,65,.4);background:none;color:#e2cf9c;font-size:17px;cursor:pointer}
+.hx-hd{text-align:center;font-size:34px;line-height:1.2}
+.hx-sheet h3{margin:2px 0 8px;text-align:center;color:#ffd97a;font-size:22px}
+.hx-intro{background:rgba(227,179,65,.09);border-right:3px solid #e3b341;border-radius:10px;padding:10px 12px;font-size:15.5px;line-height:1.75;margin:8px 0 12px}
+.hx-lbl{font-weight:700;font-size:15.5px;margin:14px 0 6px;color:#ffd97a}
+.hx-sub{font-size:14px;color:#cdb98f;line-height:1.6;margin-top:4px}
+.hx-chips{display:flex;flex-wrap:wrap;gap:7px}
+.hx-chips button{border:1px solid rgba(227,179,65,.35);background:rgba(255,255,255,.04);color:#f1e8d2;border-radius:999px;padding:8px 13px;font:600 14.5px inherit;font-family:inherit;cursor:pointer}
+.hx-chips button small{display:block;font-weight:400;font-size:12.5px;color:#cdb98f}
+.hx-chips button.on{background:linear-gradient(135deg,#f0c75a,#c2912c);border-color:#c2912c;color:#1a1205}
+.hx-chips button.on small{color:#3a2a08}
+.hx-sheet textarea,.hx-sheet input{width:100%;box-sizing:border-box;border:1px solid rgba(227,179,65,.4);border-radius:12px;padding:11px;font-size:16.5px;font-family:inherit;background:#0f0d17;color:#f1e8d2;direction:rtl}
+.hx-sum{margin:12px 0;text-align:center;background:rgba(0,0,0,.3);border:1px solid rgba(227,179,65,.45);border-radius:14px;padding:10px}
+.hx-sum b{display:block;font-size:20px;color:#ffd97a}
+.hx-sum small{color:#d9cba6;white-space:pre-line;font-size:14px;line-height:1.6}
+.hx-btn{display:block;width:100%;border:0;border-radius:14px;padding:13px;margin-top:9px;font-size:16.5px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#f0c75a,#c2912c);color:#1a1205;text-align:center}
+.hx-btn.alt{background:rgba(255,255,255,.05);color:#f1e8d2;border:1px solid rgba(227,179,65,.4)}
+.hx-row{display:flex;gap:8px}.hx-row .hx-btn{flex:1}
+.hx-bit{text-align:center;font-size:15.5px;margin:12px 0;line-height:1.9}
+.hx-bless{margin-top:14px;text-align:center;font-size:14.5px;color:#e3b341;line-height:1.7;font-weight:600}
+.hx-err{background:rgba(200,50,40,.18);border:1px solid rgba(255,110,90,.5);border-radius:10px;padding:8px 10px;margin-top:8px;font-size:14.5px;color:#ffd0c8}
+#hx-toast{position:fixed;left:50%;bottom:calc(52px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2100;background:#1c1728;border:1px solid #e3b341;color:#ffd97a;border-radius:999px;padding:9px 18px;font-size:15px;box-shadow:0 4px 18px rgba(0,0,0,.5);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -448,7 +494,10 @@ document.getElementById('spl').addEventListener('click',dismissSplash,{once:true
 <div id="kd-bar" onclick="kdWarnOpen()" role="alert">
   <b>⚠ שמות קודש — לנהוג בקדושה ובזהירות</b>
   <span>לא במקום שאינו נקי · במחשבה בלבד, לא בפה</span>
+  <div class="tk" id="nm-tick" role="button" aria-label="שמות וסגולות"><div class="tk-win"><div class="tk-run"></div></div></div>
 </div>
+<!-- פס הקדשות רץ בתחתית -->
+<div class="tk" id="hk-bar" role="button" aria-label="הקדשות"><div class="tk-win"><div class="tk-run"></div></div></div>
 
 <!-- ══ אזהרת קדושה — מסך כניסה ══ -->
 <div id="kd-warn" class="kd-show">
@@ -5109,6 +5158,159 @@ function toggleInstall(){
 
 /* מספר הגרסה מוזרק בזמן הבנייה מתוך version.json */
 (function(){var e=document.getElementById('app-ver');if(e&&e.textContent.indexOf('__')===0)e.textContent='';})();
+
+/* ---- פסים רצים: שמות וסגולות (למעלה) + הקדשות (למטה, מאגר משותף עם ברסלב PRO וספר המידות) ---- */
+(function(){
+  var WA_PHONE='972546137202';
+  var HK_URL='https://raw.githubusercontent.com/emona501-prog/breslever-pro/main/live/edits.json';
+  var LS_HK='shk_hk_live';
+  var esc=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var openUrl=function(u){try{window.open(u,'_blank');}catch(e){location.href=u;}};
+  function toast(t){var o=document.getElementById('hx-toast');if(o)o.remove();o=document.createElement('div');o.id='hx-toast';o.textContent=t;document.body.appendChild(o);setTimeout(function(){o.remove();},2400);}
+
+  function runTicker(el,html,speed,onEnd){
+    var run=el.querySelector('.tk-run'),win=el.querySelector('.tk-win');
+    run.innerHTML=html;run.style.animation='none';void run.offsetWidth;
+    var W=win.clientWidth;if(!W)return false;
+    var RW=run.scrollWidth||600;
+    run.style.setProperty('--a',-RW+'px');run.style.setProperty('--b',W+'px');
+    run.style.animation='tkRun '+Math.max(7,(W+RW)/speed).toFixed(1)+'s linear 1';
+    run.onanimationend=onEnd;return true;
+  }
+  var visible=function(){return !document.hidden&&!document.documentElement.classList.contains('spl-on');};
+
+  /* ---------- למעלה: השמות והסגולות, לפי הסדר ---------- */
+  var nmEl=document.getElementById('nm-tick'),nmPos=0,nmT=null,NM_BATCH=5;
+  function nmTick(){
+    clearTimeout(nmT);
+    if(!nmEl||typeof NAMES_A==='undefined'||!NAMES_A.length)return;
+    if(!visible()){nmT=setTimeout(nmTick,1500);return;}
+    var parts=[];
+    for(var i=0;i<NM_BATCH;i++){
+      var n=NAMES_A[(nmPos+i)%NAMES_A.length];
+      var nm=n.name;
+      try{var _t=currentType;currentType='A';nm=getDisplayName(n);currentType=_t;}catch(e){}
+      parts.push('<em data-id="'+n.id+'"><b>'+esc(nm)+'</b> <u>— '+esc(n.segula)+'</u></em>');
+    }
+    nmPos=(nmPos+NM_BATCH)%NAMES_A.length;
+    var ok=runTicker(nmEl,parts.join('<i>✦</i>'),50,function(){nmT=setTimeout(nmTick,300);});
+    if(!ok)nmT=setTimeout(nmTick,2000);
+  }
+  if(nmEl)nmEl.addEventListener('click',function(e){
+    e.stopPropagation();
+    var em=e.target.closest?e.target.closest('em[data-id]'):null;
+    if(em){try{openModal(+em.getAttribute('data-id'),'A');}catch(err){}}
+  });
+  setTimeout(nmTick,900);
+
+  /* ---------- למטה: הקדשות ---------- */
+  var HK_TY=[['rf','לרפואת','🙏','לרפואה שלמה'],['ln','לעילוי נשמת','🕯️','לעילוי נשמת'],['hz','להצלחת','🌟','להצלחה'],['ys','לישועת','✨','לישועה'],['zv','לזיווג הגון ל','💍','לזיווג הגון'],['zk','לזרע של קיימא ל','👶','לזרע של קיימא'],['pr','לפרנסה טובה ל','💰','לפרנסה']];
+  var HK_PER=[['d','יום אחד',18,'24 שעות'],['w','שבוע',101,'7 ימים'],['m','חודש',360,'30 יום']];
+  var HK_PAY0={pb:'https://links.payboxapp.com/BiD773Dwv7b',bit:'054-6137202'};
+  var HK_BLESS='<div class="hx-bless">יהי רצון שזכות הלימוד והצדקה תעמוד לכם ולכל יקיריכם, אמן.</div>';
+  var hkLive={};try{hkLive=JSON.parse(localStorage.getItem(LS_HK)||'{}')||{};}catch(e){}
+  var hkEl=document.getElementById('hk-bar'),hkT=null,hkRunning=false;
+  function hkActive(){var now=Date.now();return (hkLive.hk||[]).filter(function(h){return h&&h.u>now&&(h.s||0)<=now+6e4&&Array.isArray(h.n)&&h.n.length;});}
+  function hkLine(h){if(h.t==='fr')return h.n.join(' · ');var T=HK_TY.filter(function(t){return t[0]===h.t;})[0]||HK_TY[0];return T[1]+(/ ל$/.test(T[1])?'':' ')+h.n.join(', ');}
+  function hkTick(){
+    clearTimeout(hkT);if(!hkEl)return;
+    if(!visible()){hkT=setTimeout(hkTick,1500);return;}
+    var A=hkActive();
+    var html=A.length
+      ?'<span class="hk-l">🕯️ הלימוד היום מוקדש</span>'+A.map(function(h){return '<b>'+esc(hkLine(h))+'</b>';}).join('<i>✦</i>')
+      :'<b>🕯️ הקדישו את הלימוד — לרפואה, לעילוי נשמת, להצלחה ולישועה</b><i>✦</i><span>18 ₪ לשם · לחצו כאן להקדשה</span>';
+    hkRunning=true;
+    var ok=runTicker(hkEl,html,55,function(){hkRunning=false;hkT=setTimeout(hkTick,900);});
+    if(!ok){hkRunning=false;hkT=setTimeout(hkTick,2500);}
+  }
+  function hkFetch(){
+    try{
+      fetch(HK_URL+'?t='+Math.floor(Date.now()/6e4),{cache:'no-store'})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(j){if(!j)return;var before=JSON.stringify(hkActive().map(function(h){return h.id;}));hkLive={hk:j.hk||[],hkPay:j.hkPay||{}};try{localStorage.setItem(LS_HK,JSON.stringify(hkLive));}catch(e){}if(!hkRunning||JSON.stringify(hkActive().map(function(h){return h.id;}))!==before){hkRunning=false;hkTick();}})
+        .catch(function(){});
+    }catch(e){}
+  }
+  setTimeout(hkTick,1400);setTimeout(hkFetch,2500);setInterval(hkFetch,10*60*1000);
+
+  function sheet(html){
+    var ov=document.createElement('div');ov.className='hx-ov';
+    ov.innerHTML='<div class="hx-sheet"><button type="button" class="hx-x" aria-label="סגור">✕</button>'+html+'</div>';
+    ov.close=function(){ov.remove();};
+    ov.addEventListener('click',function(e){if(e.target===ov)ov.close();});
+    ov.querySelector('.hx-x').onclick=ov.close;
+    document.body.appendChild(ov);return ov;
+  }
+  function parseNames(txt){
+    var out=[],seen={},bad=false;
+    String(txt||'').replace(/[״“”]/g,'"').replace(/[׳‘’`]/g,"'").split(/\n|,|;/).forEach(function(line){
+      var n=line.replace(/\s+/g,' ').trim();if(!n)return;
+      if(/[A-Za-z0-9]|https?:|www\./.test(n)){bad=true;return;}
+      var k=n.replace(/["'\s]/g,'');if(seen[k])return;seen[k]=1;out.push(n.slice(0,60));
+    });
+    return {n:out,bad:bad};
+  }
+  function reqTxt(q){
+    var per=HK_PER.filter(function(t){return t[0]===q.p;})[0]||HK_PER[0];
+    return '🕯️ '+hkLine(q)+'\n⏱️ '+per[1]+' · '+q.n.length+(q.n.length===1?' שם':' שמות')+' · '+q.sum+' ₪'+(q.by?'\n👤 המקדיש: '+q.by:'');
+  }
+  function hkForm(){
+    var S={t:'rf',p:'d'};
+    var ov=sheet(
+      '<div class="hx-hd">🕯️</div><h3>הקדשת הלימוד</h3>'+
+      '<div class="hx-intro"><b>אשריכם!</b> בחרתם להקדיש את הלימוד לזכות יקיריכם.<br>השמות יופיעו בפס שבתחתית המסך אצל כל הלומדים — כאן, בספר המידות ובברסלב PRO.</div>'+
+      '<div class="hx-lbl">מטרת ההקדשה</div><div class="hx-chips" id="hxTy">'+HK_TY.map(function(t){return '<button type="button" data-v="'+t[0]+'"'+(t[0]==='rf'?' class="on"':'')+'>'+t[2]+' '+t[3]+'</button>';}).join('')+'</div>'+
+      '<div class="hx-lbl">השמות</div><textarea id="hxN" rows="3" maxlength="400" placeholder="כל שם בשורה נפרדת, למשל:&#10;יצחק בן שרה&#10;רחל בת לאה"></textarea>'+
+      '<div class="hx-sub">שם + בן/בת + שם האם (לעילוי נשמת — שם האב). כל שם בשורה נפרדת.</div><div id="hxAn"></div>'+
+      '<div class="hx-lbl">משך ההקדשה</div><div class="hx-chips" id="hxPer">'+HK_PER.map(function(t){return '<button type="button" data-v="'+t[0]+'"'+(t[0]==='d'?' class="on"':'')+'>'+t[1]+'<small>'+t[2]+' ₪ לשם · '+t[3]+'</small></button>';}).join('')+'</div>'+
+      '<div class="hx-sum" id="hxSum" style="display:none"></div>'+
+      '<div class="hx-lbl">שם המקדיש (לא חובה, לא יוצג בפס)</div><input id="hxBy" maxlength="60" placeholder="לתיאום ולאישור התשלום">'+
+      '<button type="button" class="hx-btn" id="hxGo" style="margin-top:14px">💳 המשך לתשלום</button>'+HK_BLESS);
+    function R(){
+      var r=parseNames(ov.querySelector('#hxN').value),per=HK_PER.filter(function(t){return t[0]===S.p;})[0],sum=r.n.length*per[2];
+      ov.querySelector('#hxAn').innerHTML=r.bad?'<div class="hx-err">✋ כתבו רק שמות בעברית — בלי מספרים, קישורים או אותיות לועזיות.</div>':'';
+      var el=ov.querySelector('#hxSum');el.style.display=r.n.length?'block':'none';
+      el.innerHTML='<b>'+r.n.length+(r.n.length===1?' שם':' שמות')+' × '+per[2]+' ₪ = '+sum.toLocaleString('he-IL')+' ₪</b><small>'+esc(r.n.join(' · '))+'</small>';
+      S.r=r;S.sum=sum;
+    }
+    ov.querySelector('#hxN').addEventListener('input',R);
+    [['#hxTy','t'],['#hxPer','p']].forEach(function(a){
+      var btns=ov.querySelectorAll(a[0]+' button');
+      for(var i=0;i<btns.length;i++)(function(b){b.onclick=function(){for(var j=0;j<btns.length;j++)btns[j].classList.toggle('on',btns[j]===b);S[a[1]]=b.getAttribute('data-v');R();};})(btns[i]);
+    });
+    ov.querySelector('#hxGo').onclick=function(){
+      R();var r=S.r;
+      if(!r||!r.n.length){toast('כתבו את השמות להקדשה');return;}
+      if(r.bad){toast('כתבו רק שמות בעברית');return;}
+      if(r.n.length>30){toast('לבקשה גדולה — פנו אלינו בוואטסאפ');return;}
+      var q={t:S.t,p:S.p,n:r.n,sum:S.sum,by:ov.querySelector('#hxBy').value.trim().slice(0,60)};
+      ov.close();setTimeout(function(){hkPay(q);},200);
+    };
+  }
+  function hkPay(q){
+    var L0=hkLive.hkPay||{},P={pb:L0.pb||HK_PAY0.pb,bit:L0.bit||HK_PAY0.bit},bitUrl=/^https:\/\//.test(P.bit);
+    var per=HK_PER.filter(function(t){return t[0]===q.p;})[0]||HK_PER[0];
+    var ov=sheet(
+      '<div class="hx-hd">💳</div><h3>תשלום ההקדשה</h3>'+
+      '<div class="hx-sum"><b>'+q.sum.toLocaleString('he-IL')+' ₪</b><small>'+esc(reqTxt(q))+'</small></div>'+
+      ((P.pb||bitUrl)?'<div class="hx-row">'+(P.pb?'<button type="button" class="hx-btn" id="hxPb">💚 תשלום בפייבוקס</button>':'')+(bitUrl?'<button type="button" class="hx-btn" id="hxBit">💙 תשלום בביט</button>':'')+'</div>':'')+
+      ((P.bit&&!bitUrl)?'<div class="hx-bit">💙 אפשר לשלם גם <b>בביט</b> למספר <b dir="ltr">'+esc(P.bit)+'</b><button type="button" class="hx-btn alt" id="hxBitCp">📋 העתקת המספר</button></div>':'')+
+      '<div class="hx-sub" style="margin:10px 0">אחרי התשלום לחצו על הכפתור למטה ושלחו בוואטסאפ את אישור התשלום. ההקדשה תעלה לפס מיד כשהתשלום מאושר, והזמן ('+per[3]+') נספר מרגע העלייה.</div>'+
+      '<button type="button" class="hx-btn" id="hxSend">📨 שליחת ההקדשה בוואטסאפ</button>'+HK_BLESS);
+    if(bitUrl)ov.querySelector('#hxBit').onclick=function(){openUrl(P.bit);};
+    if(P.pb)ov.querySelector('#hxPb').onclick=function(){openUrl(P.pb);};
+    var cp=ov.querySelector('#hxBitCp');
+    if(cp)cp.onclick=function(){var num=P.bit.replace(/\D/g,'');try{navigator.clipboard.writeText(num).then(function(){toast('המספר הועתק ✓');},function(){toast(num);});}catch(e){toast(num);}};
+    ov.querySelector('#hxSend').onclick=function(){
+      openUrl('https://wa.me/'+WA_PHONE+'?text='+encodeURIComponent('שלום, הקדשה באפליקציית שמות הקודש:\n'+reqTxt(q)+'\n\n✅ שילמתי — מצרף אישור תשלום'));
+      ov.close();
+      setTimeout(function(){sheet('<div class="hx-hd">🙏</div><h3>תודה רבה!</h3><div class="hx-intro" style="text-align:center">ההקדשה נשלחה. מיד כשהתשלום יאושר, השמות יעלו לפס שבתחתית המסך אצל כל הלומדים.</div>'+HK_BLESS);},300);
+    };
+  }
+  if(hkEl)hkEl.addEventListener('click',hkForm);
+  window.__hkTest={parseNames:parseNames,hkActive:hkActive,setLive:function(v){hkLive=v;hkRunning=false;hkTick();}};
+})();
+
 </script>
 </body>
 </html>
